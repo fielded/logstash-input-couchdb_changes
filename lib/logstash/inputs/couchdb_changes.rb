@@ -201,9 +201,9 @@ class LogStash::Inputs::CouchDBChanges < LogStash::Inputs::Base
     options = {:feed => FEED, :include_docs => INCLUDEDOCS, :since => @sequence}
     options = options.merge(@timeout ? {:timeout => @timeout} : {:heartbeat => @heartbeat})
     if @secure
-      URI::HTTPS(:host => @host, :port => @port, :path => @path, :query => URI.encode_www_form(options))
+      URI::HTTPS.build(:host => @host, :port => @port, :path => @path, :query => URI.encode_www_form(options))
     else
-      URI::HTTP(:host => @host, :port => @port, :path => @path, :query => URI.encode_www_form(options))
+      URI::HTTP.build(:host => @host, :port => @port, :path => @path, :query => URI.encode_www_form(options))
     end
   end
 
