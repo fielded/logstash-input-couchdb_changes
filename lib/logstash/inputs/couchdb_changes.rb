@@ -114,8 +114,6 @@ class LogStash::Inputs::CouchDBChanges < LogStash::Inputs::Base
     @sequencedb   = SequenceDB::File.new(@sequence_path)
     @path         = '/' + @db + '/_changes'
 
-    @scheme = @secure ? 'https' : 'http'
-
     if !@initial_sequence.nil?
       @logger.info("initial_sequence is set, writing to filesystem ...",
                    :initial_sequence => @initial_sequence, :sequence_path => @sequence_path)
@@ -202,7 +200,8 @@ class LogStash::Inputs::CouchDBChanges < LogStash::Inputs::Base
   def build_uri
     options = {:feed => FEED, :include_docs => INCLUDEDOCS, :since => @sequence}
     options = options.merge(@timeout ? {:timeout => @timeout} : {:heartbeat => @heartbeat})
-    URI::HTTP.build(:scheme => @scheme, :host => @host, :port => @port, :path => @path, :query => URI.encode_www_form(options))
+    Builder = @secure ? URI::HTTPS : URI::HTTP
+    Builder.build(:host => @host, :port => @port, :path => @path, :query => URI.encode_www_form(options))
   end
 
   private
