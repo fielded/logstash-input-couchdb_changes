@@ -200,8 +200,11 @@ class LogStash::Inputs::CouchDBChanges < LogStash::Inputs::Base
   def build_uri
     options = {:feed => FEED, :include_docs => INCLUDEDOCS, :since => @sequence}
     options = options.merge(@timeout ? {:timeout => @timeout} : {:heartbeat => @heartbeat})
-    Builder = @secure ? URI::HTTPS : URI::HTTP
-    Builder.build(:host => @host, :port => @port, :path => @path, :query => URI.encode_www_form(options))
+    if @secure
+      URI::HTTPS(:host => @host, :port => @port, :path => @path, :query => URI.encode_www_form(options))
+    else
+      URI::HTTP(:host => @host, :port => @port, :path => @path, :query => URI.encode_www_form(options))
+    end
   end
 
   private
